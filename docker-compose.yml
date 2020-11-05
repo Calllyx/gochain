@@ -6,7 +6,6 @@ networks:
 services:
    db:
      image: postgres
-     restart: always
      environment:
              POSTGRES_PASSWORD: pass
      volumes:
@@ -14,19 +13,22 @@ services:
      ports:
       - '5432:5432'
      networks:
-      - 'net-db'
+      - net-db
    go_project:
+      image: go_project
       build:
         context: .
         dockerfile: Dockerfile
         args:
-          IP: localhost
+          IP: 0.0.0.0
           PORT: 8000
-          POSTGRES_URL: 0.0.0.0:5432
+          POSTGRES_URL: db
           POSTGRES_PASSWORD: pass
       ports:
         - '8000:8000'
       depends_on:
+        - 'db'
+      links:
         - 'db'
       networks:
         - 'net-db'
